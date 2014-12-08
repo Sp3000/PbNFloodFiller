@@ -4,7 +4,7 @@ import random, math
 from collections import Counter
 
 TOLERANCE = 0.2
-INFILE = "mona.jpg"
+INFILE = "spheres.png"
 OUTFILE = "out.png"
 P = 30
 N = 500
@@ -172,8 +172,6 @@ while len(sets) > N:
     sets[merge_to_index] = merge_to
 
 print "Stage 3: Set merging complete"
-
-print sorted(hsl_pixels[x][0] for x in sets[0])
 
 set_cols = {}
 
