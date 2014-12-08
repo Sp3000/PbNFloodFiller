@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>Paint by Numbers - Sp3000</title>
+    </head>
+
+    <body>
+        <h1>Version 0.1</h1>
+        
+        <p>Algorithm:</p>
+        <ul>
+        <li>Convert each RGB value to <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">HSL</a> (hue, saturation, lightness)</li>
+        <li>Start with an empty list of sets. While some point is not in a set, pick a random point and do a flood fill starting at that point with some adjustable tolerance parameter. Thus we end up with a partition of the image into sets of pixels close in colour (most of these sets will end up containing only a few pixels though).</li>
+        <li><b>N-merging:</b> While we have more than N sets, find the smallest set and merge it with the neighbouring set most pixels are adjacent to (this helps to reduce the effects of noise)</li>
+        <li><b>P-merging:</b> While we have more than P colors, find the two closest colours and do a weighted merge, taking into account the size of each set</li>
+        </ul>
+        
+        <p>Program is unoptimised, takes about 5-10 minutes for full sized test images.</p>
+        
+        <h2>N = 50, P = 10, Tolerance = 0.25</h2>
+        
+        <img width="300" src="ver 0.1/images/wave_50_10_0.25.png" />
+        <img width="300" src="ver 0.1/images/spheres_50_10_0.2.5.png" />
+        <img width="300" src="ver 0.1/images/underwater_50_10_0.25.png" />
+        <img width="300" src="ver 0.1/images/starry_50_10_0.25.png" />
+        
+        <h2>N = 50, P = 50, Tolerance = 0.25</h2>
+        
+        <img width="300" src="ver 0.1/images/spheres_50_50_0.25.png" />
+        
+        <h2>N = 500, P = 30, Tolerance = 0.25</h2>
+        
+        <img width="300" src="ver 0.1/images/wave_500_30_0.25.png" />
+        <img width="300" src="ver 0.1/images/starry_500_30_0.25.png" />
+        <img width="300" src="ver 0.1/images/underwater_500_30_0.25.png" />
+        <img width="300" src="ver 0.1/images/bear_500_30_0.25.png" />
+
+        <h2>N = 500, P = 30, Tolerance = 0.2</h2>
+        
+        <img width="300" src="ver 0.1/images/wave_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/starry_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/underwater_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/bear_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/gothic_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/river_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/monkey_500_500_0.2.png" />
+        <img width="300" src="ver 0.1/images/nebula_500_30_0.2.png" />
+        <img width="300" src="ver 0.1/images/scream_500_30_0.2.png" />
+        
+    </body>
+</html>
