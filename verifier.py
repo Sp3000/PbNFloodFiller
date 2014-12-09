@@ -1,6 +1,6 @@
 from PIL import Image
 
-filepath = "out.png"
+filepath = "spheres.png"
 im = Image.open(filepath)
 width, height = im.size
 

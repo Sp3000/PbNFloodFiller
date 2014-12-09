@@ -1,5 +1,5 @@
 from __future__ import division
-from PIL import Image, ImageFilter
+from PIL import Image
 import random, math, time
 from collections import Counter, defaultdict
 
@@ -7,10 +7,10 @@ from collections import Counter, defaultdict
 Configure settings here
 """
 
-INFILE = "underwater.jpg"
+INFILE = "spheres.png"
 OUTFILE = "out.png"
 P = 30
-N = 500
+N = 100
 
 FLOOD_FILL_TOLERANCE = 10
 CLOSE_REGION_TOLERANCE = 5
@@ -102,7 +102,7 @@ def lab2rgb(lab):
     return (int(round(rgb[0])), int(round(rgb[1])), int(round(rgb[2])))
 
 """
-Stage 1: Read in image and convert to CIE-L*ab
+Stage 1: Read in image and convert to CIELAB
 """
 
 im = Image.open(INFILE)
@@ -120,7 +120,7 @@ def make_pixlab_map(im):
 
 pixlab_map = make_pixlab_map(im)
 
-print "Stage 1: CIE-L*ab conversion complete"
+print "Stage 1: CIELAB conversion complete"
 
 """
 Stage 2: Partitioning the image into like-colored regions using flood fill
@@ -259,26 +259,6 @@ for i in range(width):
                 neighbour_graph[neighbour_region].add(region)
 
 print "Stage 4a: Neighbour graph built"
-
-def print_stats():
-    # Debugging
-    i = set()
-    for n in neighbour_graph: i |= set(neighbour_graph[n])
-    print len(region_sets), len(set(pixreg_map.values())), len(region_means), len(i), len(neighbour_graph)
-
-def check_maps():
-    # Debugging
-    for i in region_sets:
-        for p in region_sets[i]:
-            if pixreg_map[p] != i:
-                print "Uh oh..."
-
-def check_graph():
-    # Debugging
-    for i in neighbour_graph:
-        for n in neighbour_graph[i]:
-            if (i in neighbour_graph[n])^(n in neighbour_graph[i]):
-                print "Uh oh...", i, n, neighbour_graph[i], neighbour_graph[n]
 
 def merge_regions(merge_from, merge_to):
     merge_from_region = region_sets[merge_from]
