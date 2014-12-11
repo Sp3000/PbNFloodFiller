@@ -7,11 +7,11 @@ from collections import Counter, defaultdict, namedtuple
 Configure settings here
 """
 
-INFILE = "all_colors.png"
+INFILE = "underwater.jpg"
 OUTFILE_STEM = "out"
 P = 30
 N = 500
-OUTPUT_ALL = False # Whether to output the image at each step
+OUTPUT_ALL = True # Whether to output the image at each step
 
 FLOOD_FILL_TOLERANCE = 10
 CLOSE_CELL_TOLERANCE = 5
@@ -26,105 +26,84 @@ Color conversion functions
 """
 
 # http://www.easyrgb.com/?X=MATH
-##def rgb2xyz(rgb):
-##  r, g, b = rgb
-##  r /= 255
-##  g /= 255
-##  b /= 255
-##
-##  r = ((r + 0.055)/1.055)**2.4 if r > 0.04045 else r/12.92
-##  g = ((g + 0.055)/1.055)**2.4 if g > 0.04045 else g/12.92
-##  b = ((b + 0.055)/1.055)**2.4 if b > 0.04045 else b/12.92
-##
-##  r *= 100
-##  g *= 100
-##  b *= 100
-##
-##  x = r*0.4124 + g*0.3576 + b*0.1805
-##  y = r*0.2126 + g*0.7152 + b*0.0722
-##  z = r*0.0193 + g*0.1192 + b*0.9505
-##
-##  return (x, y, z)
-##
-##def xyz2lab(xyz):
-##  x, y, z = xyz
-##  x /= 95.047
-##  y /= 100
-##  z /= 108.883
-##
-##  x = x**(1/3) if x > 0.008856 else 7.787*x + 16/116
-##  y = y**(1/3) if y > 0.008856 else 7.787*y + 16/116
-##  z = z**(1/3) if z > 0.008856 else 7.787*z + 16/116
-##
-##  L = 116*y - 16
-##  a = 500*(x - y)
-##  b = 200*(y - z)
-##
-##  return (L, a, b)
-##
-##def rgb2lab(rgb):
-##  return xyz2lab(rgb2xyz(rgb))
-##
-##def lab2xyz(lab):
-##  L, a, b = lab
-##  y = (L + 16)/116
-##  x = a/500 + y
-##  z = y - b/200
-##
-##  y = y**3 if y**3 > 0.008856 else (y - 16/116)/7.787
-##  x = x**3 if x**3 > 0.008856 else (x - 16/116)/7.787
-##  z = z**3 if z**3 > 0.008856 else (z - 16/116)/7.787
-##
-##  x *= 95.047
-##  y *= 100
-##  z *= 108.883
-##
-##  return (x, y, z)
-##
-##def xyz2rgb(xyz):
-##  x, y, z = xyz
-##  x /= 100
-##  y /= 100
-##  z /= 100
-##
-##  r = x* 3.2406 + y*-1.5372 + z*-0.4986
-##  g = x*-0.9689 + y* 1.8758 + z* 0.0415
-##  b = x* 0.0557 + y*-0.2040 + z* 1.0570
-##
-##  r = 1.055 * (r**(1/2.4)) - 0.055 if r > 0.0031308 else 12.92*r
-##  g = 1.055 * (g**(1/2.4)) - 0.055 if g > 0.0031308 else 12.92*g
-##  b = 1.055 * (b**(1/2.4)) - 0.055 if b > 0.0031308 else 12.92*b
-##
-##  r *= 255
-##  g *= 255
-##  b *= 255
-##
-##  return (r, g, b)
-##
-##def lab2rgb(lab):
-##  rgb = xyz2rgb(lab2xyz(lab))
-##  return (int(round(rgb[0])), int(round(rgb[1])), int(round(rgb[2])))
-
 def rgb2xyz(rgb):
- r,g,b=rgb;r/=255;g/=255;b/=255;r=((r+0.055)/1.055)**2.4 if r>0.04045 else r/12.92
- g=((g+0.055)/1.055)**2.4 if g>0.04045 else g/12.92;b=((b+0.055)/1.055)**2.4 if b>0.04045 else b/12.92
- r*=100;g*=100;b*=100;x=r*0.4124+g*0.3576+b*0.1805;y=r*0.2126+g*0.7152+b*0.0722
- z=r*0.0193+g*0.1192+b*0.9505;return(x,y,z)
+  r, g, b = rgb
+  r /= 255
+  g /= 255
+  b /= 255
+
+  r = ((r + 0.055)/1.055)**2.4 if r > 0.04045 else r/12.92
+  g = ((g + 0.055)/1.055)**2.4 if g > 0.04045 else g/12.92
+  b = ((b + 0.055)/1.055)**2.4 if b > 0.04045 else b/12.92
+
+  r *= 100
+  g *= 100
+  b *= 100
+
+  x = r*0.4124 + g*0.3576 + b*0.1805
+  y = r*0.2126 + g*0.7152 + b*0.0722
+  z = r*0.0193 + g*0.1192 + b*0.9505
+
+  return (x, y, z)
+
 def xyz2lab(xyz):
- x,y,z=xyz;x/=95.047;y/=100;z/=108.883;x=x**(1/3)if x>0.008856 else 7.787*x+16/116
- y=y**(1/3)if y>0.008856 else 7.787*y+16/116;z=z**(1/3)if z>0.008856 else 7.787*z + 16/116
- L=116*y-16;a=500*(x-y);b=200*(y-z);return(L,a,b)
-def rgb2lab(rgb):return xyz2lab(rgb2xyz(rgb))
+  x, y, z = xyz
+  x /= 95.047
+  y /= 100
+  z /= 108.883
+
+  x = x**(1/3) if x > 0.008856 else 7.787*x + 16/116
+  y = y**(1/3) if y > 0.008856 else 7.787*y + 16/116
+  z = z**(1/3) if z > 0.008856 else 7.787*z + 16/116
+
+  L = 116*y - 16
+  a = 500*(x - y)
+  b = 200*(y - z)
+
+  return (L, a, b)
+
+def rgb2lab(rgb):
+  return xyz2lab(rgb2xyz(rgb))
+
 def lab2xyz(lab):
- L,a,b=lab;y=(L+16)/116;x=a/500+y;z=y-b/200;y=y**3 if y**3>0.008856 else(y-16/116)/7.787
- x=x**3 if x**3>0.008856 else (x-16/116)/7.787;z=z**3 if z**3>0.008856 else(z-16/116)/7.787
- x*=95.047;y*=100;z*=108.883;return(x,y,z)
+  L, a, b = lab
+  y = (L + 16)/116
+  x = a/500 + y
+  z = y - b/200
+
+  y = y**3 if y**3 > 0.008856 else (y - 16/116)/7.787
+  x = x**3 if x**3 > 0.008856 else (x - 16/116)/7.787
+  z = z**3 if z**3 > 0.008856 else (z - 16/116)/7.787
+
+  x *= 95.047
+  y *= 100
+  z *= 108.883
+
+  return (x, y, z)
+
 def xyz2rgb(xyz):
- x,y,z=xyz;x/=100;y/=100;z/=100;r=x*3.2406+y*-1.5372+z*-0.4986
- g=x*-0.9689+y*1.8758+z*0.0415;b=x*0.0557+y*-0.2040+z*1.0570
- r=1.055*(r**(1/2.4))-0.055 if r>0.0031308 else 12.92*r;g=1.055*(g**(1/2.4))-0.055 if g>0.0031308 else 12.92*g
- b=1.055*(b**(1/2.4))-0.055 if b>0.0031308 else 12.92*b;r*=255;g*=255;b*=255;return(r,g,b)
-def lab2rgb(lab):rgb=xyz2rgb(lab2xyz(lab));return tuple([int(round(x))for x in rgb])
+  x, y, z = xyz
+  x /= 100
+  y /= 100
+  z /= 100
+
+  r = x* 3.2406 + y*-1.5372 + z*-0.4986
+  g = x*-0.9689 + y* 1.8758 + z* 0.0415
+  b = x* 0.0557 + y*-0.2040 + z* 1.0570
+
+  r = 1.055 * (r**(1/2.4)) - 0.055 if r > 0.0031308 else 12.92*r
+  g = 1.055 * (g**(1/2.4)) - 0.055 if g > 0.0031308 else 12.92*g
+  b = 1.055 * (b**(1/2.4)) - 0.055 if b > 0.0031308 else 12.92*b
+
+  r *= 255
+  g *= 255
+  b *= 255
+
+  return (r, g, b)
+
+def lab2rgb(lab):
+  rgb = xyz2rgb(lab2xyz(lab))
+  return (int(round(rgb[0])), int(round(rgb[1])), int(round(rgb[2])))
 
 """
 Stage 1: Read in image and convert to CIELAB
@@ -263,7 +242,7 @@ def remove_small(cell_size):
     if len(cell_sets) <= N:
       return
 
-for cell_size in xrange(1, SMALL_CELL_THRESHOLD):
+for cell_size in range(1, SMALL_CELL_THRESHOLD):
   remove_small(cell_size)
 
 if OUTPUT_ALL:
@@ -289,10 +268,10 @@ cell_means = {}
 for cellnum in cell_sets:
   cell_means[cellnum] = mean_color(cell_sets[cellnum], pixlab_map)
 
-n_graph = defaultdict(set)
+neighbour_graph = defaultdict(set)
 
-for i in xrange(width):
-  for j in xrange(height):
+for i in range(width):
+  for j in range(height):
     pixel = (i, j)
     cell = pixcell_map[pixel]
 
@@ -300,8 +279,8 @@ for i in xrange(width):
       neighbour_cell = pixcell_map[n]
 
       if neighbour_cell != cell:
-        n_graph[cell].add(neighbour_cell)
-        n_graph[neighbour_cell].add(cell)
+        neighbour_graph[cell].add(neighbour_cell)
+        neighbour_graph[neighbour_cell].add(cell)
 
 def merge_cells(merge_from, merge_to):
   merge_from_cell = cell_sets[merge_from]
@@ -312,16 +291,16 @@ def merge_cells(merge_from, merge_to):
   del cell_sets[merge_from]
   del cell_means[merge_from]
 
-  n_graph[merge_to] |= n_graph[merge_from]
-  n_graph[merge_to].remove(merge_to)
+  neighbour_graph[merge_to] |= neighbour_graph[merge_from]
+  neighbour_graph[merge_to].remove(merge_to)
 
-  for n in n_graph[merge_from]:
-    n_graph[n].remove(merge_from)
+  for n in neighbour_graph[merge_from]:
+    neighbour_graph[n].remove(merge_from)
 
     if n != merge_to:
-      n_graph[n].add(merge_to)
+      neighbour_graph[n].add(merge_to)
 
-  del n_graph[merge_from]
+  del neighbour_graph[merge_from]
 
   cell_sets[merge_to] |= merge_from_cell
   cell_means[merge_to] = mean_color(cell_sets[merge_to], pixlab_map)
@@ -340,7 +319,7 @@ while len(cell_sets) > N and to_search:
     cellnum = to_search.pop()
     close_cells = []
 
-    for neighbour_cellnum in n_graph[cellnum]:
+    for neighbour_cellnum in neighbour_graph[cellnum]:
       if d(cell_means[cellnum], cell_means[neighbour_cellnum]) < CLOSE_CELL_TOLERANCE:
         close_cells.append(neighbour_cellnum)
 
@@ -385,11 +364,11 @@ Stage 5: N-merging - merge until <= N cells
 def score(cell1, cell2):
   return d(cell_means[cell1], cell_means[cell2]) * len(cell_sets[cell1])**.5
 
-n_scores = {}
+neighbour_scores = {}
 
 for cellnum in cell_sets:
-  for n in n_graph[cellnum]:
-    n_scores[(n, cellnum)] = score(n, cellnum)
+  for n in neighbour_graph[cellnum]:
+    neighbour_scores[(n, cellnum)] = score(n, cellnum)
 
 last_time = time.time()
 
@@ -398,17 +377,17 @@ while len(cell_sets) > N * FIRST_PASS_N_RATIO:
     last_time = time.time()
     print "N-merging... (%d cells remaining)" % len(cell_sets)
 
-  merge_from, merge_to = min(n_scores, key=lambda x: n_scores[x])
+  merge_from, merge_to = min(neighbour_scores, key=lambda x: neighbour_scores[x])
 
-  for n in n_graph[merge_from]:
-    del n_scores[(merge_from, n)]
-    del n_scores[(n, merge_from)]
+  for n in neighbour_graph[merge_from]:
+    del neighbour_scores[(merge_from, n)]
+    del neighbour_scores[(n, merge_from)]
 
   merge_cells(merge_from, merge_to)
 
-  for n in n_graph[merge_to]:
-    n_scores[(n, merge_to)] = score(n, merge_to)
-    n_scores[(merge_to, n)] = score(merge_to, n)
+  for n in neighbour_graph[merge_to]:
+    neighbour_scores[(n, merge_to)] = score(n, merge_to)
+    neighbour_scores[(merge_to, n)] = score(merge_to, n)
 
 if OUTPUT_ALL:
   frame_im = Image.new("RGB", im.size)
@@ -422,7 +401,7 @@ if OUTPUT_ALL:
   frame_im.save(OUTFILE_STEM + "3.png")
   print "Saved image %s3.png" % OUTFILE_STEM
 
-del n_graph, n_scores
+del neighbour_graph, neighbour_scores
 
 print "Stage 5: N-merging complete, %d cells" % len(cell_sets)
 
@@ -494,7 +473,7 @@ def db_index(clusters):
 best_clusters = None
 best_index = None
 
-for i in xrange(K_MEANS_TRIALS):  
+for i in range(K_MEANS_TRIALS):  
   centroids = {cell_means[cellnum] for cellnum in random.sample(cell_sets, P)}
   converged = False
 
@@ -540,50 +519,50 @@ Stage 7: Approximate Gaussian smoothing
 # Hindsight tells me I should have used a class. I hate hindsight.
 def vec_sum(vectors):
   assert(vectors and all(len(v) == len(vectors[0]) for v in vectors))
-  return tuple(sum(x[i] for x in vectors) for i in xrange(len(vectors[0])))
+  return tuple(sum(x[i] for x in vectors) for i in range(len(vectors[0])))
 
 def linear_blur(color_list):
   # Can be made faster with an accumulator
   output = []
 
-  for i in xrange(len(color_list)):
+  for i in range(len(color_list)):
     relevant_pixels = color_list[max(i-BLUR_RADIUS+1, 0):i+BLUR_RADIUS]
     pixsum = vec_sum(relevant_pixels)
-    output.append(tuple(pixsum[i]/len(relevant_pixels) for i in xrange(3)))
+    output.append(tuple(pixsum[i]/len(relevant_pixels) for i in range(3)))
 
   return output
 
 def horizontal_blur():
-  for row in xrange(height):
-    colors = [blurpix_map[(i, row)] for i in xrange(width)]
+  for row in range(height):
+    colors = [blurpix_map[(i, row)] for i in range(width)]
     colors = linear_blur(colors)
 
-    for i in xrange(width):
+    for i in range(width):
       blurpix_map[(i, row)] = colors[i]
 
 def vertical_blur():
-  for column in xrange(width):
-    colors = [blurpix_map[(column, j)] for j in xrange(height)]
+  for column in range(width):
+    colors = [blurpix_map[(column, j)] for j in range(height)]
     colors = linear_blur(colors)
 
-    for j in xrange(height):
+    for j in range(height):
       blurpix_map[(column, j)] = colors[j]
 
 blurpix_map = {}
 
-for i in xrange(width):
-  for j in xrange(height):
+for i in range(width):
+  for j in range(height):
     blurpix_map[(i, j)] = newpix_map[(i, j)]
 
-for i in xrange(BLUR_RUNS):
+for i in range(BLUR_RUNS):
   vertical_blur()
   horizontal_blur()
 
 # Pixel : color of smoothed image
 smoothpix_map = {}
 
-for i in xrange(width):
-  for j in xrange(height):
+for i in range(width):
+  for j in range(height):
     pixel = (i, j)
     blur_color = blurpix_map[pixel]
     nearby_colors = {newpix_map[pixel]}
@@ -696,7 +675,7 @@ def remove_small(cell_size):
     del cell_sets[cellnum]
     del cell_colors[cellnum]
 
-for cell_size in xrange(1, SMALL_CELL_THRESHOLD):
+for cell_size in range(1, SMALL_CELL_THRESHOLD):
   remove_small(cell_size)
 
 if OUTPUT_ALL:
@@ -724,16 +703,16 @@ def merge_cells(merge_from, merge_to):
   del cell_sets[merge_from]
   del cell_colors[merge_from]
 
-  n_graph[merge_to] |= n_graph[merge_from]
-  n_graph[merge_to].remove(merge_to)
+  neighbour_graph[merge_to] |= neighbour_graph[merge_from]
+  neighbour_graph[merge_to].remove(merge_to)
 
-  for n in n_graph[merge_from]:
-    n_graph[n].remove(merge_from)
+  for n in neighbour_graph[merge_from]:
+    neighbour_graph[n].remove(merge_from)
 
     if n != merge_to:
-      n_graph[n].add(merge_to)
+      neighbour_graph[n].add(merge_to)
 
-  del n_graph[merge_from]
+  del neighbour_graph[merge_from]
 
   cell_color = cell_colors[merge_to]
 
@@ -742,10 +721,10 @@ def merge_cells(merge_from, merge_to):
 
   cell_sets[merge_to] |= merge_from_cell
 
-n_graph = defaultdict(set)
+neighbour_graph = defaultdict(set)
 
-for i in xrange(width):
-  for j in xrange(height):
+for i in range(width):
+  for j in range(height):
     pixel = (i, j)
     cell = pixcell_map[pixel]
 
@@ -753,14 +732,14 @@ for i in xrange(width):
       neighbour_cell = pixcell_map[n]
 
       if neighbour_cell != cell:
-        n_graph[cell].add(neighbour_cell)
-        n_graph[neighbour_cell].add(cell)
+        neighbour_graph[cell].add(neighbour_cell)
+        neighbour_graph[neighbour_cell].add(cell)
 
-n_scores = {}
+neighbour_scores = {}
 
 for cellnum in cell_sets:
-  for n in n_graph[cellnum]:
-    n_scores[(n, cellnum)] = score(n, cellnum)
+  for n in neighbour_graph[cellnum]:
+    neighbour_scores[(n, cellnum)] = score(n, cellnum)
 
 last_time = time.time()
 
@@ -769,17 +748,17 @@ while len(cell_sets) > N:
     last_time = time.time()
     print "N-merging (pass 2)... (%d cells remaining)" % len(cell_sets)
 
-  merge_from, merge_to = min(n_scores, key=lambda x: n_scores[x])
+  merge_from, merge_to = min(neighbour_scores, key=lambda x: neighbour_scores[x])
 
-  for n in n_graph[merge_from]:
-    del n_scores[(merge_from, n)]
-    del n_scores[(n, merge_from)]
+  for n in neighbour_graph[merge_from]:
+    del neighbour_scores[(merge_from, n)]
+    del neighbour_scores[(n, merge_from)]
 
   merge_cells(merge_from, merge_to)
 
-  for n in n_graph[merge_to]:
-    n_scores[(n, merge_to)] = score(n, merge_to)
-    n_scores[(merge_to, n)] = score(merge_to, n)
+  for n in neighbour_graph[merge_to]:
+    neighbour_scores[(n, merge_to)] = score(n, merge_to)
+    neighbour_scores[(merge_to, n)] = score(merge_to, n)
 
 print "Stage 10: N-merging pass 2 complete, %d cells" % len(cell_sets)
 
@@ -789,8 +768,8 @@ Stage last: Output the image!
 
 test_im = Image.new("RGB", im.size)
 
-for i in xrange(width):
-  for j in xrange(height):
+for i in range(width):
+  for j in range(height):
     test_im.putpixel((i, j), lab2rgb(smoothpix_map[(i, j)]))
 
 if OUTPUT_ALL:
